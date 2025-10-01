@@ -1,0 +1,38 @@
+{
+  // TypeScript settings for this project.
+  // Most of this comes from Next.js defaults, with a few extras.
+
+  "compilerOptions": {
+    "target": "ES2020",              // modern JavaScript features
+    "lib": ["dom", "dom.iterable", "es2020"], // browser + ES features
+    "allowJs": false,                // only .ts / .tsx files
+    "skipLibCheck": true,            // don’t type-check node_modules
+    "strict": true,                  // strict mode = better safety
+    "noEmit": true,                  // don’t output JS files
+    "esModuleInterop": true,         // make import/export easier
+    "module": "ESNext",              // use modern modules
+    "moduleResolution": "Bundler",   // Next.js wants this
+    "resolveJsonModule": true,       // allow importing .json files
+    "isolatedModules": true,         // each file is checked alone
+    "jsx": "preserve",               // keep JSX as-is for Next.js
+    "incremental": true,             // speed up re-builds
+
+    // extra type support
+    "types": ["node"],
+
+    // plugin for Next.js
+    "plugins": [{ "name": "next" }]
+  },
+
+  // files TypeScript should look at
+  "include": [
+    "next-env.d.ts",
+    "global.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+
+  // ignore these
+"exclude": ["node_modules"]
+}

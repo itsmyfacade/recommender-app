@@ -3,6 +3,9 @@
 A small Flask API that suggests similar products using text embeddings.  
 Built for learning and demo purposes.
 
+Note: I originally built this project a few months ago. This version is a **reconstruction** with a cleaner setup (Flask API + Next.js frontend) so I could practice structuring a full-stack app from scratch again.
+
+
 ---
 
 ## Features
@@ -11,7 +14,7 @@ Built for learning and demo purposes.
 
 ---
 
-## Setup (Windows PowerShell)
+## Local Setup (Windows PowerShell)
 
 Clone the repo and go into the folder:
 
@@ -19,10 +22,12 @@ Clone the repo and go into the folder:
 git clone https://github.com/itsmyfacade/recommender-app.git
 cd recommender-app
 ```
+**API (backend)**
 
 Create and activate a virtual environment:
 
-```bash cd api
+```bash 
+cd api
 python -m venv .venv
 .\.venv\Scripts\Activate
 ```
@@ -45,6 +50,19 @@ The service will start on:
 👉 http://127.0.0.1:8001
 
 ---
+**Web (frontend)**
+
+Open a new terminal, go to the web folder:
+```bash
+cd web
+npm install
+npm run dev
+```
+
+The frontend will start on:
+👉 http://127.0.0.1:3000
+
+
 
 ## Example Requests
 
@@ -74,5 +92,6 @@ python -m pytest -q
 ---
 
 ## Notes
-*	Product data lives in api/data/products.json.
-*	The model is all-MiniLM-L6-v2 from SentenceTransformers.
+* Product data lives in api/data/products.json.
+* The model is all-MiniLM-L6-v2 from SentenceTransformers.
+* Frontend is Next.js 14 with minimal setup.
