@@ -1,22 +1,46 @@
-# Python virtual environment
+# Virtual environments
 .venv/
-env/
 venv/
+env/
 
-# Pycache and test cache
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+api/.env
+web/.env
+web/app/.env
+
+# Python cache / test cache
 __pycache__/
+*.py[cod]
+*.pyo
+*.pyd
 .pytest_cache/
 
-# Node/ Next.js
+# Build / packaging
+*.egg-info/
+dist/
+build/
+
+# Node / Next.js
 node_modules/
 .next/
+web/node_modules/
+web/.next/
 
 # Logs
-.log
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# OS noise
+# OS files
 .DS_Store
 Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
