@@ -2,7 +2,6 @@
 
 **Live frontend:** https://semantic-discovery-web.onrender.com
 **Live API:** https://semantic-discovery-api.onrender.com
-**GitHub:** https://github.com/itsmyfacade/recommender-app
 
 Production-oriented semantic recommendation API powered by sentence embeddings. Designed as a modular machine learning inference service with a separate frontend client.
 
