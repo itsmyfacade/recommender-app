@@ -6,9 +6,12 @@ import { NextResponse } from "next/server";
   - Uses NEXT_PUBLIC_API_URL to know where the backend lives.
 */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8001";
+const API_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8001";
+const REQUEST_TIMEOUT_MS = Number(process.env.API_TIMEOUT_MS || "180000");
 
 export async function POST(req: Request) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   try {
     // read the raw JSON body from the browser request
     const body = await req.text();
@@ -17,7 +20,8 @@ export async function POST(req: Request) {
     const r = await fetch(`${API_URL}/recommend`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body
+      body,
+      signal: controller.signal,
     });
 
     // return Flask's response to the browser unchanged
@@ -27,7 +31,8 @@ export async function POST(req: Request) {
       headers: { "Content-Type": "application/json" }
     });
   } catch {
-    // if backend is down or URL is wrong, return a 502 error
     return NextResponse.json({ error: "Proxy failed to reach backend" }, { status: 502 });
+  } finally {
+    clearTimeout(timeout);
   }
 }

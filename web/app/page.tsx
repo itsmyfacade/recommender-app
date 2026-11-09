@@ -13,7 +13,7 @@ type Item = { id: string; title: string; score: number };
 type RecommendResponse = { items: Item[] };
 type ErrorResponse = { error?: string };
 
-export default function Page() {
+function LegacyPage() {
   // query text from the input
   const [query, setQuery] = useState("");
   // number of results to return
@@ -115,3 +115,5 @@ export default function Page() {
     </main>
   );
 }
+
+export { default } from "./DiscoveryWorkbench";

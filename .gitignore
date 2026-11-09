@@ -1,5 +1,7 @@
 # Virtual environments
 .venv/
+recommender-recovery/
+.venv312-recovery/
 venv/
 env/
 
@@ -29,6 +31,7 @@ build/
 node_modules/
 .next/
 web/node_modules/
+*.tsbuildinfo
 web/.next/
 
 # Logs

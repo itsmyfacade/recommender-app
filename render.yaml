@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: semantic-discovery-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./api/Dockerfile
+    dockerContext: ./api
+    healthCheckPath: /health
+    envVars:
+      - key: FRONTEND_ORIGINS
+        sync: false
+      - key: MODEL_NAME
+        value: sentence-transformers/all-MiniLM-L6-v2
+      - key: DEFAULT_K
+        value: "5"
+      - key: MAX_K
+        value: "10"
+      - key: MAX_CONTENT_LENGTH
+        value: "20000"
+      - key: EMBEDDING_BATCH_SIZE
+        value: "8"
+      - key: INFERENCE_CONCURRENCY
+        value: "1"
+      - key: RATE_LIMIT_REQUESTS
+        value: "30"
+      - key: RATE_LIMIT_WINDOW_SECONDS
+        value: "60"
+
+  - type: web
+    name: semantic-discovery-web
+    runtime: node
+    plan: free
+    rootDir: web
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start -- --hostname 0.0.0.0 --port $PORT
+    envVars:
+      - key: API_URL
+        sync: false

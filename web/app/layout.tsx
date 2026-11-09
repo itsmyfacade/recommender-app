@@ -8,8 +8,8 @@ import type { Metadata } from "next";
 */
 
 export const metadata: Metadata = {
-  title: "Mini Recommender",
-  description: "Find similar products with embeddings",
+  title: "Semantic Discovery | Embedding Search",
+  description: "Explore semantic product matches with real MiniLM embedding inference.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
