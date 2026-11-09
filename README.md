@@ -337,7 +337,7 @@ The browser workbench provides semantic search, two-query comparison, category/t
 
 ## Container and deployment boundary
 
-The backend Dockerfile uses a single Gunicorn worker, CPU-only PyTorch, and the container `PORT` contract. Isolated container build and real inference acceptance have passed; public deployment remains unverified. A Render deployment should use separate frontend and backend services, set the frontend `API_URL` to the backend URL, expose only the backend health path publicly, and retain deployment-level abuse protection.
+The backend Dockerfile uses one Gunicorn `gthread` worker with two threads, CPU-only PyTorch, and the container `PORT` contract. The single process preserves model memory while allowing the lightweight `/health` endpoint to respond during inference. A Render deployment should use separate frontend and backend services, set the frontend `API_URL` to the backend URL, expose only the backend health path publicly, and retain deployment-level abuse protection.
 
 ## Final acceptance measurements
 
