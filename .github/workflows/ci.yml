@@ -1,0 +1,81 @@
+name: Semantic Discovery CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend-python:
+    name: Backend / Python
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: api/requirements.txt
+      - name: Install lightweight test dependencies
+        run: python -m pip install --disable-pip-version-check pytest Flask flask-cors numpy PyYAML
+      - name: Run Python tests
+        run: python -m pytest tests -q
+      - name: Compile Python sources
+        run: python -m compileall -q .
+      - name: Validate Render Blueprint
+        working-directory: .
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import yaml
+
+          blueprint = yaml.safe_load(Path("render.yaml").read_text(encoding="utf-8"))
+          services = blueprint["services"]
+          assert len(services) == 2
+          assert {service["name"] for service in services} == {"semantic-discovery-api", "semantic-discovery-web"}
+          assert all(service["type"] == "web" and service["plan"] == "free" for service in services)
+          assert not any(service["type"] in {"database", "disk", "worker", "background_worker"} for service in services)
+          api = next(service for service in services if service["name"] == "semantic-discovery-api")
+          web = next(service for service in services if service["name"] == "semantic-discovery-web")
+          assert api["runtime"] == "docker" and api["healthCheckPath"] == "/health"
+          assert api["dockerContext"] == "./api" and api["dockerfilePath"] == "./api/Dockerfile"
+          assert web["runtime"] == "node" and web["rootDir"] == "web"
+          assert "API_URL" in {item["key"] for item in web["envVars"]}
+          print("Render Blueprint validated")
+          PY
+
+  frontend-nextjs:
+    name: Frontend / Next.js
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: TypeScript validation
+        run: npm run typecheck
+      - name: Production build
+        run: npm run build
+      - name: Dependency audit
+        run: npm audit --audit-level=high

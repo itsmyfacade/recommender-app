@@ -1,5 +1,9 @@
 # Recommender Service
 
+**Live frontend:** https://semantic-discovery-web.onrender.com
+**Live API:** https://semantic-discovery-api.onrender.com
+**GitHub:** https://github.com/itsmyfacade/recommender-app
+
 Production-oriented semantic recommendation API powered by sentence embeddings. Designed as a modular machine learning inference service with a separate frontend client.
 
 ## Overview
@@ -287,7 +291,7 @@ Local CPU benchmark using a warm model:
 
 ## Security and deployment boundary
 
-Set `FRONTEND_ORIGINS` to the exact frontend origin before exposing the API. The API applies bounded request sizes, a single in-process inference slot, a small per-process fixed-window request limit, and safe public errors. Catalog embedding initialization uses a bounded batch size to reduce peak memory. These controls are suitable for a controlled demonstration, not a substitute for a distributed production rate limiter or authentication. Tests use fixed embeddings and mocked model calls where appropriate, so they do not download the SentenceTransformer model. A real demo still requires model download, memory for PyTorch, and deployment-specific abuse protection. This repository has not been deployed or load-tested as a public service.
+Set `FRONTEND_ORIGINS` to the exact frontend origin before exposing the API. The API applies bounded request sizes, a single in-process inference slot, a small per-process fixed-window request limit, and safe public errors. Catalog embedding initialization uses a bounded batch size to reduce peak memory. These controls are suitable for a controlled demonstration, not a substitute for a distributed production rate limiter or authentication. Tests use fixed embeddings and mocked model calls where appropriate, so they do not download the SentenceTransformer model. A real demo still requires model download, memory for PyTorch, and deployment-specific abuse protection. The public deployment is a separate Render configuration; this repository does not claim production uptime or distributed load-test coverage.
 ## Final frontend experience
 
 The Next.js client is a dark semantic-discovery workspace with natural-language search, example queries, supported result-count selection, disabled duplicate submissions, embedding/loading feedback, ranked catalog titles, real similarity scores, and explicit limitations around purchase prediction.
@@ -296,7 +300,7 @@ The Next.js client is a dark semantic-discovery workspace with natural-language 
 Browser → Next.js /api/recommend proxy → Flask /recommend → MiniLM embeddings
 ```
 
-Use Python 3.12 for the documented local environment. The Dockerfile installs CPU-only Torch; isolated container build, real MiniLM inference, and 80-record catalog verification have passed. After reducing catalog embedding batch size, a strict 512 MiB container acceptance run completed real MiniLM inference at approximately 409 MiB, leaving limited headroom. Public deployment remains unverified.
+Use Python 3.12 for the documented local environment. The Dockerfile installs CPU-only Torch; isolated container build, real MiniLM inference, and 80-record catalog verification have passed. After reducing catalog embedding batch size, a strict 512 MiB container acceptance run completed real MiniLM inference at approximately 409 MiB, leaving limited headroom. The deployed API has passed live health, catalog, and recommendation checks on Render Free, and the public frontend plus its catalog and recommendation proxies have returned live application responses.
 ## Verified two-terminal startup
 
 ```powershell
@@ -350,8 +354,21 @@ The backend Dockerfile uses one Gunicorn `gthread` worker with two threads, CPU-
 
 ## Render preparation and cost boundary
 
-`render.yaml` defines a free Node frontend and a free Docker API service. A strict local 512 MiB cap completed real MiniLM inference at approximately 442 MiB, leaving limited headroom for a controlled demonstration. Free services can cold-start and can be suspended after free instance hours are exhausted; this is not production certification. Set `FRONTEND_ORIGINS` and the frontend `API_URL` during Blueprint setup; no secrets are committed.
+`render.yaml` defines a free Node frontend and a free Docker API service. A strict local 512 MiB cap completed real MiniLM inference at approximately 409 MiB, leaving limited headroom for a controlled demonstration. Free services can cold-start and can be suspended after free instance hours are exhausted; this is not production certification. Set `FRONTEND_ORIGINS` and the frontend `API_URL` during Blueprint setup; no secrets are committed.
 
-Deployment steps: create a Render Blueprint from `render.yaml`, provide the two prompted URLs, confirm the API service health check, wait for the model's first cold start, then test `/health`, `/catalog`, and one `/recommend` request. No deployment has been performed by this repository.
+Deployment steps: create a Render Blueprint from `render.yaml`, provide the two prompted URLs, confirm the API service health check, wait for the model's first cold start, then test `/health`, `/catalog`, and one `/recommend` request. Render deployment is managed outside this repository.
+
+## Verified live API
+
+- API: https://semantic-discovery-api.onrender.com
+- `GET /health`: verified HTTP 200 after cold start.
+- `GET /catalog`: verified HTTP 200 with 80 products.
+- `POST /recommend`: verified real MiniLM results.
+
+The public frontend and API are deployed as separate Render Free services. Cold starts can take longer than warm requests, and free services may suspend when free-instance limits are exhausted.
+
+## GitHub Actions CI
+
+The repository workflow runs on pushes to `main`, pull requests targeting `main`, and manual dispatch. It runs mocked Python API tests, Python syntax checks, Render Blueprint validation, TypeScript validation, a Next.js production build, and `npm audit --audit-level=high`. Ordinary CI does not download the MiniLM model; real-model validation is performed separately through Docker and the deployed service.
 
 The workbench includes semantic search, two-query comparison, session-only search history, CSV export, and a catalog explorer backed by the read-only `GET /catalog` endpoint. The explorer displays the actual 80 synthetic records used for retrieval, supports category and text filtering, and does not invent prices, ratings, images, or personalization signals.

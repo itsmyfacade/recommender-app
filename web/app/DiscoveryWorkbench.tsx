@@ -567,7 +567,7 @@ export default function DiscoveryWorkbench() {
             Queries and catalog titles are encoded with{" "}
             <strong>sentence-transformers/all-MiniLM-L6-v2</strong>. Normalized
             vectors are compared with cosine similarity. This demo contains only
-            the verified 10 product-title records, no prices, ratings,
+            the verified 80 synthetic product records, no prices, ratings,
             inventory, or personalization signals.
           </p>
         </div>
